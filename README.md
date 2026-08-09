@@ -22,8 +22,8 @@ A modern, fast, and responsive Pokémon Search web application built with **Go (
 
 1. Clone the repository:
    ```bash
-   git clone <YOUR_REPOSITORY_URL>
-   cd pokemon-search-app
+   git clone https://github.com/RyanDoesCoding103/PokeSearch.git
+   cd PokeSearch
    ```
 
 2. Run the application:
