@@ -1,6 +1,7 @@
 package main
 
 import (
+	_ "embed"
 	"encoding/json"
 	"fmt"
 	"io"
@@ -10,6 +11,9 @@ import (
 	"os"
 	"strings"
 )
+
+//go:embed index.html
+var indexHTML []byte
 
 type AbilityDetail struct {
 	Name string `json:"name"`
@@ -75,6 +79,15 @@ type ErrorResponse struct {
 	Error string `json:"error"`
 }
 
+func indexHandler(w http.ResponseWriter, r *http.Request) {
+	if r.URL.Path != "/" && r.URL.Path != "/index.html" {
+		http.NotFound(w, r)
+		return
+	}
+	w.Header().Set("Content-Type", "text/html; charset=utf-8")
+	w.Write(indexHTML)
+}
+
 func pokemonAPIHandler(w http.ResponseWriter, r *http.Request) {
 	w.Header().Set("Content-Type", "application/json")
 
@@ -126,14 +139,14 @@ func pokemonAPIHandler(w http.ResponseWriter, r *http.Request) {
 
 func main() {
 	http.HandleFunc("/api/pokemon", pokemonAPIHandler)
-	http.Handle("/", http.FileServer(http.Dir("./")))
+	http.HandleFunc("/", indexHandler)
 
 	port := os.Getenv("PORT")
 	if port == "" {
 		port = "8080"
 	}
 
-	fmt.Printf("⚡ PokéApp server running at http://localhost:%s\n", port)
+	fmt.Printf("⚡ PokéApp server running on port %s\n", port)
 	if err := http.ListenAndServe(":"+port, nil); err != nil {
 		log.Fatalf("Server failed: %v", err)
 	}
